@@ -55,6 +55,14 @@
         </cTool>
       </item>
       <item path="nrf24.c" ex="false" tool="0" flavor2="0">
+        <cTool flags="0">
+          <preprocessorList>
+            <Elem>BIGBOOT=1</Elem>
+            <Elem>F_CPU=8000000L</Elem>
+            <Elem>RADIO_UART=1</Elem>
+            <Elem>SUPPORT_EEPROM_CMD</Elem>
+          </preprocessorList>
+        </cTool>
       </item>
       <item path="optiboot.c" ex="false" tool="0" flavor2="0">
         <cTool flags="0">

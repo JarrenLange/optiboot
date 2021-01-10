@@ -413,7 +413,7 @@ atmega168prf: AVR_FREQ ?= 8000000L
 #atmega168prf: LDSECTIONS  = -Wl,--section-start=.text=0x3e00 -Wl,--section-start=.version=0x3ffe
 #else
 #bigboot required by default
-atmega168prf: LDSECTIONS  = -Wl,--section-start=.text=0x3c00 -Wl,--section-start=.version=0x3ffe
+atmega168prf: LDSECTIONS  = -Wl,--section-start=.text=0x3800 -Wl,--section-start=.version=0x3ffe
 #endif
 atmega168prf: $(PROGRAM)_atmega168prf.hex
 ifndef PRODUCTION
