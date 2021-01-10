@@ -59,7 +59,7 @@ PROGRAM    = optiboot
 export
 
 # defaults
-MCU_TARGET = atmega168
+MCU_TARGET = atmega168prf
 LDSECTIONS  = -Wl,--section-start=.text=0x3e00 -Wl,--section-start=.version=0x3ffe
 
 # Build environments
@@ -249,11 +249,17 @@ OSCCAL_VALUE_CMD = -DOSCCAL_VALUE=$(OSCCAL_VALUE)
 dummy = FORCE
 endif
 
+HELPTEXT += "Option OSCCAL_VALUE=nnn      - set set OSCCAL_VALUE in bootloader\n"
+ifdef OSCCAL_VALUE
+OSCCAL_VALUE_CMD = -DOSCCAL_VALUE=$(OSCCAL_VALUE)
+dummy = FORCE
+endif
+
 
 COMMON_OPTIONS = $(BAUD_RATE_CMD) $(LED_START_FLASHES_CMD) $(BIGBOOT_CMD)
 COMMON_OPTIONS += $(SOFT_UART_CMD) $(LED_DATA_FLASH_CMD) $(LED_CMD) $(SS_CMD)
 COMMON_OPTIONS += $(SUPPORT_EEPROM_CMD) $(LED_START_ON_CMD) $(APPSPM_CMD)
-COMMON_OPTIONS += $(OSCCAL_VALUE_CMD) $(VERSION_CMD) $(TIMEOUT_CMD)
+COMMON_OPTIONS += $(OSCCAL_VALUE_CMD) $(VERSION_CMD) $(TIMEOUT_CMD) $(RADIO_UART_CMD) 
 
 #UART is handled separately and only passed for devices with more than one.
 HELPTEXT += "Option UART=n                - use UARTn for communications\n"
@@ -265,8 +271,8 @@ UART_CMD = -DUARTTX=$(UARTTX)
 endif
 
 HELPTEXT += "Option TIMEOUT=n             - set WDT to 1, 2, 4, or 8 seconds\n"
-ifdef TIMEOUT
-TIMEOUT_CMD = -DWDTTIME=$(TIMEOUT)
+ifdef RADIO_UART
+RADIO_UART_CMD = -DRADIO_UART=1
 dummy = FORCE
 endif
 
@@ -385,7 +391,7 @@ HELPTEXT += "target atmega168*    - ATmega168/A, ATmega168P, ATMEGA1268PB\n"
 atmega168: TARGET = atmega168
 atmega168: MCU_TARGET = atmega168
 atmega168: CFLAGS += $(COMMON_OPTIONS)
-atmega168: AVR_FREQ ?= 16000000L
+atmega168: AVR_FREQ ?= 8000000L
 ifndef BIGBOOT
 atmega168: LDSECTIONS  = -Wl,--section-start=.text=0x3e00 -Wl,--section-start=.version=0x3ffe
 else
@@ -395,6 +401,25 @@ atmega168: $(PROGRAM)_atmega168.hex
 ifndef PRODUCTION
 atmega168: $(PROGRAM)_atmega168.lst
 endif
+
+HELPTEXT += "target atmega168* with rf24    - ATmega168/A, ATmega168P, ATMEGA1268PB\n"
+atmega168prf: TARGET = atmega168p
+atmega168prf: MCU_TARGET = atmega168p
+#atmega168prf: CFLAGS += $(COMMON_OPTIONS) 
+atmega168prf: CFLAGS += -DSUPPORT_EEPROM_CMD -DBIGBOOT=1
+atmega168prf: CFLAGS += -DRADIO_UART=1
+atmega168prf: AVR_FREQ ?= 8000000L
+#ifndef BIGBOOT
+#atmega168prf: LDSECTIONS  = -Wl,--section-start=.text=0x3e00 -Wl,--section-start=.version=0x3ffe
+#else
+#bigboot required by default
+atmega168prf: LDSECTIONS  = -Wl,--section-start=.text=0x3c00 -Wl,--section-start=.version=0x3ffe
+#endif
+atmega168prf: $(PROGRAM)_atmega168prf.hex
+ifndef PRODUCTION
+atmega168prf: $(PROGRAM)_atmega168prf.lst
+endif
+
 
 atmega168_isp: atmega168
 atmega168_isp: TARGET = atmega168
